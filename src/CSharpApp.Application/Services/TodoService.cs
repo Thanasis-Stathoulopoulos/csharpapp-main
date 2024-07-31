@@ -5,29 +5,37 @@ public class TodoService : ITodoService
     private readonly ILogger<TodoService> _logger;
     private readonly HttpClient _client;
 
-    private readonly string? _baseUrl;
-
-    public TodoService(ILogger<TodoService> logger, 
-        IConfiguration configuration)
+    public TodoService(ILogger<TodoService> logger, HttpClient client)
     {
         _logger = logger;
-        _client = new HttpClient();
-        _baseUrl = configuration["BaseUrl"];
+        _client = client;
     }
 
     public async Task<TodoRecord?> GetTodoById(int id)
     {
-        _client.BaseAddress = new Uri(_baseUrl!);
-        var response = await _client.GetFromJsonAsync<TodoRecord>($"todos/{id}");
-
-        return response;
+        try
+        {
+            var response = await _client.GetFromJsonAsync<TodoRecord>($"todos/{id}");
+            return response;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching todo with item ID: {Id}", id);
+            return null;
+        }
     }
-
+   
     public async Task<ReadOnlyCollection<TodoRecord>> GetAllTodos()
     {
-        _client.BaseAddress = new Uri(_baseUrl!);
-        var response = await _client.GetFromJsonAsync<List<TodoRecord>>($"todos");
-
-        return response!.AsReadOnly();
+        try
+        {
+            var response = await _client.GetFromJsonAsync<List<TodoRecord>>("todos");
+            return response?.AsReadOnly() ?? new List<TodoRecord>().AsReadOnly();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching all todo items");
+            return new List<TodoRecord>().AsReadOnly();
+        }
     }
 }
