@@ -6,8 +6,6 @@ builder.Configuration.AddEnvironmentVariables();
 
 // Add services to the container.
 builder.Services.AddDefaultConfiguration();
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -19,23 +17,27 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHttpsRedirection();
+}
 
-//app.UseHttpsRedirection();
 
 app.MapGet("/todos", async (ITodoService todoService) =>
-    {
-        var todos = await todoService.GetAllTodos();
-        return todos;
-    })
-    .WithName("GetTodos")
-    .WithOpenApi();
+{
+    var todos = await todoService.GetAllTodos();
+    return todos;
+})
+.WithName("GetTodos")
+.WithOpenApi();
 
 app.MapGet("/todos/{id}", async ([FromRoute] int id, ITodoService todoService) =>
-    {
+{
         var todos = await todoService.GetTodoById(id);
         return todos;
-    })
-    .WithName("GetTodosById")
-    .WithOpenApi();
+})
+.WithName("GetTodosById")
+.WithOpenApi();
 
 app.Run();
