@@ -5,19 +5,18 @@ public class TodoService : ITodoService
     private readonly ILogger<TodoService> _logger;
     private readonly HttpClient _client;
 
-    private readonly string? _baseUrl;
-
-    public TodoService(ILogger<TodoService> logger, 
-        IConfiguration configuration)
+    public TodoService(ILogger<TodoService> logger,
+        IConfiguration configuration, HttpClient client)
     {
         _logger = logger;
-        _client = new HttpClient();
-        _baseUrl = configuration["BaseUrl"];
+        _client = client;
+
+        var baseUrl = configuration["BaseUrl"] ?? throw new ArgumentException("BaseUrl configuration is missing or empty.");
+        _client.BaseAddress = new Uri(baseUrl!);
     }
 
     public async Task<TodoRecord?> GetTodoById(int id)
     {
-        _client.BaseAddress = new Uri(_baseUrl!);
         var response = await _client.GetFromJsonAsync<TodoRecord>($"todos/{id}");
 
         return response;
@@ -25,7 +24,6 @@ public class TodoService : ITodoService
 
     public async Task<ReadOnlyCollection<TodoRecord>> GetAllTodos()
     {
-        _client.BaseAddress = new Uri(_baseUrl!);
         var response = await _client.GetFromJsonAsync<List<TodoRecord>>($"todos");
 
         return response!.AsReadOnly();
