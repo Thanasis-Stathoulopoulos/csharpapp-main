@@ -19,7 +19,7 @@ public class TodoService : ITodoService
     {
         try
         {
-            var todoRecords = await _client.GetAsync($"todos");
+            var todoRecords = await _client.GetAsync("todos");
 
             if (todoRecords.IsSuccessStatusCode)
             {
