@@ -42,4 +42,28 @@ public class PostService : IPostService
             throw new Exception(ex.Message);
         }
     }
+
+    public async Task<PostRecord?> GetPostById(int id)
+    {
+        try
+        {
+            var postRecord = await _client.GetAsync($"posts/{id}");
+
+            if (postRecord.IsSuccessStatusCode)
+            {
+                var response = await postRecord.Content.ReadFromJsonAsync<PostRecord>();
+
+                return response;
+            }
+            else
+            {
+                throw new HttpRequestException($"Request failed with status code {postRecord.StatusCode} ({postRecord.ReasonPhrase})");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching post with item ID: {ItemId}", id);
+            throw new Exception(ex.Message);
+        }
+    }
 }

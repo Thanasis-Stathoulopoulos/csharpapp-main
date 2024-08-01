@@ -29,21 +29,21 @@ else
 
 
 app.MapGet("/todos", async (ITodoService todoService) =>
-    {
-        var todos = await todoService.GetAllTodos();
-        return todos;
-    })
-    .WithName("GetTodos")
+{
+    var todos = await todoService.GetAllTodos();
+    return todos;
+})
+    .WithName("GetAllTodos")
     .WithOpenApi()
     .WithTags("Todos");
 
 
 app.MapGet("/todos/{id}", async ([FromRoute] int id, ITodoService todoService) =>
-    {
-        var todos = await todoService.GetTodoById(id);
-        return todos;
-    })
-    .WithName("GetTodosById")
+{
+    var todos = await todoService.GetTodoById(id);
+    return todos;
+})
+    .WithName("GetTodoById")
     .WithOpenApi()
     .WithTags("Todos");
 
@@ -53,8 +53,16 @@ app.MapGet("/posts", async (IPostService postService) =>
     var posts = await postService.GetAllPosts();
     return posts;
 })
-    .WithName("GetPosts")
+    .WithName("GetAllPosts")
     .WithOpenApi()
     .WithTags("Posts");
 
+app.MapGet("/posts/{id}", async ([FromRoute] int id, IPostService postService) =>
+{
+    var post = await postService.GetPostById(id);
+    return post;
+})
+    .WithName("GetPostById")
+    .WithOpenApi()
+    .WithTags("Posts");
 app.Run();
