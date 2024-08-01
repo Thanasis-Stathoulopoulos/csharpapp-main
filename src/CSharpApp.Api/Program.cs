@@ -34,7 +34,9 @@ app.MapGet("/todos", async (ITodoService todoService) =>
         return todos;
     })
     .WithName("GetTodos")
-    .WithOpenApi();
+    .WithOpenApi()
+    .WithTags("Todos");
+
 
 app.MapGet("/todos/{id}", async ([FromRoute] int id, ITodoService todoService) =>
     {
@@ -42,6 +44,7 @@ app.MapGet("/todos/{id}", async ([FromRoute] int id, ITodoService todoService) =
         return todos;
     })
     .WithName("GetTodosById")
-    .WithOpenApi();
+    .WithOpenApi()
+    .WithTags("Todos");
 
 app.Run();
