@@ -15,7 +15,7 @@ public class TodoService : ITodoService
         _client.BaseAddress = new Uri(baseUrl);
     }
 
-    public async Task<ReadOnlyCollection<TodoRecord>?> GetAllTodos()
+    public async Task<ReadOnlyCollection<TodoRecord>?> GetAllTodosAsync()
     {
         try
         {
@@ -43,7 +43,7 @@ public class TodoService : ITodoService
         }
     }
 
-    public async Task<TodoRecord?> GetTodoById(int id)
+    public async Task<TodoRecord?> GetTodoByIdAsync(int id)
     {
         try
         {

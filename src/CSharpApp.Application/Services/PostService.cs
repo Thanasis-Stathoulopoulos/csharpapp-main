@@ -1,4 +1,6 @@
 using CSharpApp.Application.Models;
+using CSharpApp.Core.Dtos;
+using CSharpApp.Core.Models;
 
 namespace CSharpApp.Application.Services;
 
@@ -17,78 +19,191 @@ public class PostService : IPostService
         _client.BaseAddress = new Uri(baseUrl);
     }
 
-    public async Task<ReadOnlyCollection<PostRecord>?> GetAllPosts()
+    public async Task<PostRecordResponseModel> GetAllPostsAsync()
     {
+        var result = new PostRecordResponseModel();
+
         try
         {
-            var postRecords = await _client.GetAsync("posts");
+            var response = await _client.GetAsync("posts");
 
-            if (postRecords.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
-                var response = await postRecords.Content.ReadFromJsonAsync<List<PostRecord>>();
+                var postRecords = await response.Content.ReadFromJsonAsync<List<PostRecord>>();
 
-                if (response == null)
-                    return default;
-
-                return response.AsReadOnly();
+                result.OperationSucceeded = true;
+                result.PostRecords = postRecords;
             }
             else
             {
-                throw new HttpRequestException($"Request failed with status code {postRecords.StatusCode} ({postRecords.ReasonPhrase})");
+                string message = $"Request failed with status code {response.StatusCode} ({response.ReasonPhrase})";
+                _logger.LogError(message);
+                result.OperationSucceeded = false;
+                result.ErrorResults =
+                [
+                    new($"{response.StatusCode}", $"{response.ReasonPhrase}")
+                ];
             }
-
         }
-        catch (Exception ex)
+        catch (HttpRequestException ex)
         {
             _logger.LogError(ex, "Error fetching posts");
-            throw new Exception(ex.Message);
-        }
-    }
-
-    public async Task<PostRecord?> GetPostById(int id)
-    {
-        try
-        {
-            var postRecord = await _client.GetAsync($"posts/{id}");
-
-            if (postRecord.IsSuccessStatusCode)
-            {
-                var response = await postRecord.Content.ReadFromJsonAsync<PostRecord>();
-
-                return response;
-            }
-            else
-            {
-                throw new HttpRequestException($"Request failed with status code {postRecord.StatusCode} ({postRecord.ReasonPhrase})");
-            }
+            result.ErrorResults =
+            [
+                new($"{ex.StatusCode}", ex.Message)
+            ];
+            result.OperationSucceeded = false;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error fetching post with item ID: {ItemId}", id);
-            throw new Exception(ex.Message);
+            _logger.LogError(ex, "Unexpected error fetching posts");
+            result.ErrorResults =
+            [
+              new("500", ex.Message)
+            ];
+            result.OperationSucceeded = false;
         }
+        return result;
     }
-    public async Task<PostRecord?> CreatePost(CreatePostModel createPostModel)
+
+    public async Task<PostRecordResponseModel> GetPostByIdAsync(int id)
     {
+        var result = new PostRecordResponseModel();
+
+        try
+        {
+            var response = await _client.GetAsync($"posts/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var postRecord = await response.Content.ReadFromJsonAsync<PostRecord>();
+
+                var record = new List<PostRecord>
+                {
+                    postRecord
+                };
+
+                result.OperationSucceeded = true;
+                result.PostRecords = record;
+
+            }
+            else
+            {
+                string message = $"Request failed with status code {response.StatusCode} ({response.ReasonPhrase})";
+                _logger.LogError(message);
+                result.OperationSucceeded = false;
+                result.ErrorResults =
+                [
+                    new($"{response.StatusCode}", $"{response.ReasonPhrase}")
+                ];
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "Error fetching posts");
+            result.ErrorResults =
+            [
+                new($"{ex.StatusCode}", ex.Message)
+            ];
+            result.OperationSucceeded = false;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error fetching posts");
+            result.ErrorResults =
+            [
+              new("500", ex.Message)
+            ];
+            result.OperationSucceeded = false;
+        }
+        return result;
+    }
+
+    public async Task<PostRecordResponseModel> CreatePostAsync(CreatePostModel createPostModel)
+    {
+        var result = new PostRecordResponseModel();
+
         try
         {
             var createdPost = await _client.PostAsJsonAsync("posts", createPostModel);
 
             if (createdPost.IsSuccessStatusCode)
             {
-                var response = await createdPost.Content.ReadFromJsonAsync<PostRecord>();
-
-                return response;
+                result.OperationSucceeded = true;
             }
             else
             {
-                throw new HttpRequestException($"Request failed with status code {createdPost.StatusCode} ({createdPost.ReasonPhrase})");
+                string message = $"Request failed with status code {createdPost.StatusCode} ({createdPost.ReasonPhrase})";
+                _logger.LogError(message);
+                result.OperationSucceeded = false;
+                result.ErrorResults =
+                [
+                    new($"{createdPost.StatusCode}", $"{createdPost.ReasonPhrase}")
+                ];
             }
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "Error fetching posts");
+            result.ErrorResults =
+            [
+                new($"{ex.StatusCode}", ex.Message)
+            ];
+            result.OperationSucceeded = false;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error fetching post with item ID: ");
-            throw new Exception(ex.Message);
+            _logger.LogError(ex, "Unexpected error fetching posts");
+            result.ErrorResults =
+            [
+              new("500", ex.Message)
+            ];
+            result.OperationSucceeded = false;
         }
+        return result;
+    }
+
+    public async Task<PostRecordResponseModel> DeletePostAsync(int id)
+    {
+        var result = new PostRecordResponseModel();
+
+        try
+        {
+            var postRecord = await _client.DeleteAsync($"posts/{id}");
+
+            if (postRecord.IsSuccessStatusCode)
+            {
+                result.OperationSucceeded = true;
+            }
+            else
+            {
+                string message = $"Request failed with status code {postRecord.StatusCode} ({postRecord.ReasonPhrase})";
+                _logger.LogError(message);
+                result.OperationSucceeded = false;
+                result.ErrorResults =
+                [
+                    new($"{postRecord.StatusCode}", $"{postRecord.ReasonPhrase}")
+                ];
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "Error fetching posts");
+            result.ErrorResults =
+            [
+                new($"{ex.StatusCode}", ex.Message)
+            ];
+            result.OperationSucceeded = false;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error fetching posts");
+            result.ErrorResults =
+            [
+              new("500", ex.Message)
+            ];
+            result.OperationSucceeded = false;
+        }
+        return result;
     }
 }

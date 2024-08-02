@@ -33,7 +33,7 @@ else
 
 app.MapGet("/todos", async (ITodoService todoService) =>
 {
-    var todos = await todoService.GetAllTodos();
+    var todos = await todoService.GetAllTodosAsync();
     return todos;
 })
     .WithName("GetAllTodos")
@@ -43,7 +43,7 @@ app.MapGet("/todos", async (ITodoService todoService) =>
 
 app.MapGet("/todos/{id}", async ([FromRoute] int id, ITodoService todoService) =>
 {
-    var todos = await todoService.GetTodoById(id);
+    var todos = await todoService.GetTodoByIdAsync(id);
     return todos;
 })
     .WithName("GetTodoById")
@@ -53,7 +53,7 @@ app.MapGet("/todos/{id}", async ([FromRoute] int id, ITodoService todoService) =
 
 app.MapGet("/posts", async (IPostService postService) =>
 {
-    var posts = await postService.GetAllPosts();
+    var posts = await postService.GetAllPostsAsync();
     return posts;
 })
     .WithName("GetAllPosts")
@@ -62,7 +62,7 @@ app.MapGet("/posts", async (IPostService postService) =>
 
 app.MapGet("/posts/{id}", async ([FromRoute] int id, IPostService postService) =>
 {
-    var post = await postService.GetPostById(id);
+    var post = await postService.GetPostByIdAsync(id);
     return post;
 })
     .WithName("GetPostById")
@@ -78,10 +78,19 @@ app.MapPost("/posts", async (PostRecordRequestModel postRequestModel, IPostServi
         Title = postRequestModel.Title
     };
 
-    var newPost = await postService.CreatePost(createPostModel);
-    return Results.Created($"/posts/{newPost.Id}", newPost);
+    var newPost = await postService.CreatePostAsync(createPostModel);
+    return newPost;
 })
 .WithName("CreatePost")
+.WithOpenApi()
+.WithTags("Posts");
+
+app.MapDelete("/posts/{id}", async ([FromRoute] int id, IPostService postService) =>
+{
+    var deletedPost = await postService.DeletePostAsync(id);
+    return deletedPost;
+})
+.WithName("DeletePost")
 .WithOpenApi()
 .WithTags("Posts");
 app.Run();
