@@ -1,3 +1,6 @@
+using CSharpApp.API.Models;
+using CSharpApp.Application.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog(new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger());
@@ -65,4 +68,20 @@ app.MapGet("/posts/{id}", async ([FromRoute] int id, IPostService postService) =
     .WithName("GetPostById")
     .WithOpenApi()
     .WithTags("Posts");
+
+app.MapPost("/posts", async (PostRecordRequestModel postRequestModel, IPostService postService) =>
+{
+    var createPostModel = new CreatePostModel()
+    {
+        UserId = postRequestModel.UserId,
+        Body = postRequestModel.Body,
+        Title = postRequestModel.Title
+    };
+
+    var newPost = await postService.CreatePost(createPostModel);
+    return Results.Created($"/posts/{newPost.Id}", newPost);
+})
+.WithName("CreatePost")
+.WithOpenApi()
+.WithTags("Posts");
 app.Run();

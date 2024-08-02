@@ -1,8 +1,10 @@
+using Newtonsoft.Json;
+
 namespace CSharpApp.Core.Dtos;
 
-public record PostRecord(
+public record TodoRecord(
     [property: JsonProperty("userId")] int UserId,
     [property: JsonProperty("id")] int Id,
     [property: JsonProperty("title")] string Title,
-    [property: JsonProperty("body")] string Body
+    [property: JsonProperty("completed")] bool Completed
 );

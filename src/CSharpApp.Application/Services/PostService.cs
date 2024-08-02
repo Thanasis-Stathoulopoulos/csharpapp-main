@@ -1,3 +1,5 @@
+using CSharpApp.Application.Models;
+
 namespace CSharpApp.Application.Services;
 
 public class PostService : IPostService
@@ -63,6 +65,29 @@ public class PostService : IPostService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error fetching post with item ID: {ItemId}", id);
+            throw new Exception(ex.Message);
+        }
+    }
+    public async Task<PostRecord?> CreatePost(CreatePostModel createPostModel)
+    {
+        try
+        {
+            var createdPost = await _client.PostAsJsonAsync("posts", createPostModel);
+
+            if (createdPost.IsSuccessStatusCode)
+            {
+                var response = await createdPost.Content.ReadFromJsonAsync<PostRecord>();
+
+                return response;
+            }
+            else
+            {
+                throw new HttpRequestException($"Request failed with status code {createdPost.StatusCode} ({createdPost.ReasonPhrase})");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching post with item ID: ");
             throw new Exception(ex.Message);
         }
     }
