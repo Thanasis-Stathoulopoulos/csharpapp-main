@@ -6,15 +6,12 @@ namespace CSharpApp.API.Models
     public class PostRecordRequestModel
     {
         [JsonProperty("userId")]
-        [Required]
         public int UserId { get; set; }
 
         [JsonProperty("title")]
-        [Required]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [JsonProperty("body")]
-        [Required]
-        public string Body { get; set; }
+        public string? Body { get; set; }
     }
 }

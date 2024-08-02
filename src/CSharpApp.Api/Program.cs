@@ -31,7 +31,7 @@ else
 }
 
 
-app.MapGet("/todos", async (ITodoService todoService) =>
+app.MapGet("/GetAllTodos", async (ITodoService todoService) =>
 {
     var todos = await todoService.GetAllTodosAsync();
     return todos;
@@ -41,7 +41,7 @@ app.MapGet("/todos", async (ITodoService todoService) =>
     .WithTags("Todos");
 
 
-app.MapGet("/todos/{id}", async ([FromRoute] int id, ITodoService todoService) =>
+app.MapGet("/GetTodoById/{id}", async ([FromRoute] int id, ITodoService todoService) =>
 {
     var todos = await todoService.GetTodoByIdAsync(id);
     return todos;
@@ -51,7 +51,7 @@ app.MapGet("/todos/{id}", async ([FromRoute] int id, ITodoService todoService) =
     .WithTags("Todos");
 
 
-app.MapGet("/posts", async (IPostService postService) =>
+app.MapGet("/GetAllPosts", async (IPostService postService) =>
 {
     var posts = await postService.GetAllPostsAsync();
     return posts;
@@ -60,7 +60,7 @@ app.MapGet("/posts", async (IPostService postService) =>
     .WithOpenApi()
     .WithTags("Posts");
 
-app.MapGet("/posts/{id}", async ([FromRoute] int id, IPostService postService) =>
+app.MapGet("/GetPostById/{id}", async ([FromRoute] int id, IPostService postService) =>
 {
     var post = await postService.GetPostByIdAsync(id);
     return post;
@@ -69,13 +69,13 @@ app.MapGet("/posts/{id}", async ([FromRoute] int id, IPostService postService) =
     .WithOpenApi()
     .WithTags("Posts");
 
-app.MapPost("/posts", async (PostRecordRequestModel postRequestModel, IPostService postService) =>
+app.MapPost("/CreatePost", async (PostRecordRequestModel postRequestModel, IPostService postService) =>
 {
     var createPostModel = new CreatePostModel()
     {
         UserId = postRequestModel.UserId,
-        Body = postRequestModel.Body,
-        Title = postRequestModel.Title
+        Body = postRequestModel.Body != null ? postRequestModel.Body : "null",
+        Title = postRequestModel.Title != null ? postRequestModel.Title : "null"
     };
 
     var newPost = await postService.CreatePostAsync(createPostModel);
@@ -85,7 +85,7 @@ app.MapPost("/posts", async (PostRecordRequestModel postRequestModel, IPostServi
 .WithOpenApi()
 .WithTags("Posts");
 
-app.MapDelete("/posts/{id}", async ([FromRoute] int id, IPostService postService) =>
+app.MapDelete("/DeletePost/{id}", async ([FromRoute] int id, IPostService postService) =>
 {
     var deletedPost = await postService.DeletePostAsync(id);
     return deletedPost;
