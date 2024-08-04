@@ -1,3 +1,6 @@
+using CSharpApp.Application.Dtos;
+using CSharpApp.Application.Interfaces;
+
 namespace CSharpApp.Application.Services;
 
 public class TodoService : ITodoService
@@ -5,29 +8,65 @@ public class TodoService : ITodoService
     private readonly ILogger<TodoService> _logger;
     private readonly HttpClient _client;
 
-    private readonly string? _baseUrl;
-
-    public TodoService(ILogger<TodoService> logger, 
-        IConfiguration configuration)
+    public TodoService(ILogger<TodoService> logger,
+        IConfiguration configuration, HttpClient client)
     {
         _logger = logger;
-        _client = new HttpClient();
-        _baseUrl = configuration["BaseUrl"];
+        _client = client;
+
+        var baseUrl = configuration["BaseUrl"] ?? throw new ArgumentException("BaseUrl configuration is missing or empty.");
+        _client.BaseAddress = new Uri(baseUrl);
     }
 
-    public async Task<TodoRecord?> GetTodoById(int id)
+    public async Task<ReadOnlyCollection<TodoRecord>?> GetAllTodosAsync()
     {
-        _client.BaseAddress = new Uri(_baseUrl!);
-        var response = await _client.GetFromJsonAsync<TodoRecord>($"todos/{id}");
+        try
+        {
+            var todoRecords = await _client.GetAsync("todos");
 
-        return response;
+            if (todoRecords.IsSuccessStatusCode)
+            {
+                var response = await todoRecords.Content.ReadFromJsonAsync<List<TodoRecord>>();
+
+                if (response == null)
+                    return default;
+
+                return response.AsReadOnly();
+            }
+            else
+            {
+                throw new HttpRequestException($"Request failed with status code {todoRecords.StatusCode} ({todoRecords.ReasonPhrase})");
+            }
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching todo items");
+            throw new Exception(ex.Message);
+        }
     }
 
-    public async Task<ReadOnlyCollection<TodoRecord>> GetAllTodos()
+    public async Task<TodoRecord?> GetTodoByIdAsync(int id)
     {
-        _client.BaseAddress = new Uri(_baseUrl!);
-        var response = await _client.GetFromJsonAsync<List<TodoRecord>>($"todos");
+        try
+        {
+            var todoRecord = await _client.GetAsync($"todos/{id}");
 
-        return response!.AsReadOnly();
+            if (todoRecord.IsSuccessStatusCode)
+            {
+                var response = await todoRecord.Content.ReadFromJsonAsync<TodoRecord>();
+
+                return response;
+            }
+            else
+            {
+                throw new HttpRequestException($"Request failed with status code {todoRecord.StatusCode} ({todoRecord.ReasonPhrase})");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching todo with item ID: {ItemId}", id);
+            throw new Exception(ex.Message);
+        }
     }
 }
