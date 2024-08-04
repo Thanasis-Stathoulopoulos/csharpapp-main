@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace CSharpApp.Core.Dtos;
+namespace CSharpApp.Application.Dtos;
 
 public record PostRecord(
     [property: JsonProperty("userId")] int UserId,

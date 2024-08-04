@@ -1,6 +1,6 @@
+using CSharpApp.Application.Dtos;
+using CSharpApp.Application.Interfaces;
 using CSharpApp.Application.Models;
-using CSharpApp.Core.Dtos;
-using CSharpApp.Core.Models;
 
 namespace CSharpApp.Application.Services;
 

@@ -1,4 +1,5 @@
 using CSharpApp.API.Models;
+using CSharpApp.Application.Interfaces;
 using CSharpApp.Application.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,7 +31,6 @@ else
     app.UseHttpsRedirection();
 }
 
-
 app.MapGet("/GetAllTodos", async (ITodoService todoService) =>
 {
     var todos = await todoService.GetAllTodosAsync();
@@ -40,7 +40,6 @@ app.MapGet("/GetAllTodos", async (ITodoService todoService) =>
     .WithOpenApi()
     .WithTags("Todos");
 
-
 app.MapGet("/GetTodoById/{id}", async ([FromRoute] int id, ITodoService todoService) =>
 {
     var todos = await todoService.GetTodoByIdAsync(id);
@@ -49,7 +48,6 @@ app.MapGet("/GetTodoById/{id}", async ([FromRoute] int id, ITodoService todoServ
     .WithName("GetTodoById")
     .WithOpenApi()
     .WithTags("Todos");
-
 
 app.MapGet("/GetAllPosts", async (IPostService postService) =>
 {
@@ -93,4 +91,5 @@ app.MapDelete("/DeletePost/{id}", async ([FromRoute] int id, IPostService postSe
 .WithName("DeletePost")
 .WithOpenApi()
 .WithTags("Posts");
+
 app.Run();
