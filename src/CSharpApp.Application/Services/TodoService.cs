@@ -1,3 +1,6 @@
+using CSharpApp.Application.Dtos;
+using CSharpApp.Application.Interfaces;
+
 namespace CSharpApp.Application.Services;
 
 public class TodoService : ITodoService

@@ -1,4 +1,6 @@
-namespace CSharpApp.Core.Interfaces;
+using CSharpApp.Application.Dtos;
+
+namespace CSharpApp.Application.Interfaces;
 
 public interface ITodoService
 {

@@ -6,7 +6,7 @@ public static class DefaultConfiguration
     {
         services.AddTransient<ITodoService, TodoService>();
         services.AddTransient<IPostService, PostService>();
-        
+
         return services;
     }
 }

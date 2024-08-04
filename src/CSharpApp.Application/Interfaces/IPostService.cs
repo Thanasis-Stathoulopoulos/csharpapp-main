@@ -1,6 +1,6 @@
 using CSharpApp.Application.Models;
 
-namespace CSharpApp.Core.Interfaces;
+namespace CSharpApp.Application.Interfaces;
 
 public interface IPostService
 {

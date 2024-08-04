@@ -1,3 +1,4 @@
+using CSharpApp.Application.Dtos;
 using CSharpApp.Core.Models;
 
 namespace CSharpApp.Application.Models
