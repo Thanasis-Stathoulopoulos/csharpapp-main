@@ -1,3 +1,4 @@
+using CSharpApp.Application.Categories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Polly;
@@ -10,7 +11,6 @@ public static class HttpConfiguration
 {
     public static IServiceCollection AddHttpConfiguration(this IServiceCollection services)
     {
-        // Configure ProductsService HTTP client
         services.AddHttpClient<IProductsService, ProductsService>((provider, client) =>
         {
             var settings = provider.GetRequiredService<IOptions<RestApiSettings>>().Value;
@@ -18,6 +18,12 @@ public static class HttpConfiguration
         })
         .AddPolicyHandler(GetRetryPolicy());
 
+        services.AddHttpClient<ICategoriesService, CategoriesService>((provider, client) =>
+        {
+            var settings = provider.GetRequiredService<IOptions<RestApiSettings>>().Value;
+            client.BaseAddress = new Uri(settings.BaseUrl!);
+        })
+        .AddPolicyHandler(GetRetryPolicy());
         return services;
     }
 
