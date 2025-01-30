@@ -21,17 +21,30 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 var versionedEndpointRouteBuilder = app.NewVersionedApi();
 
-versionedEndpointRouteBuilder.MapGet("api/v{version:apiVersion}/getproducts", async (IProductsService productsService) =>
-{
-    var products = await productsService.GetProducts();
-    return products;
-})
+var productsGroup = app.MapGroup("api/v{version:apiVersion}/products")
+    .WithTags("Products")
+    .WithOpenApi();
+
+productsGroup.MapGet("/", async (IProductsService productsService) =>
+    await productsService.GetProducts())
     .WithName("GetProducts")
-    .HasApiVersion(1.0);
+    .Produces<IReadOnlyCollection<Product>>(StatusCodes.Status200OK);
+
+productsGroup.MapGet("/{id}", async (int id, IProductsService productsService) =>
+    await productsService.GetProductById(id))
+    .WithName("GetProductById")
+    .Produces<Product>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status404NotFound);
+
+productsGroup.MapPost("/", async (Product product, IProductsService productsService) =>
+    Results.CreatedAtRoute("GetProductById", new { id = (await productsService.CreateProduct(product)).Id }, product))
+    .WithName("CreateProduct")
+    .Produces<Product>(StatusCodes.Status201Created)
+    .ProducesValidationProblem();
 
 versionedEndpointRouteBuilder.MapGet("api/v{version:apiVersion}/categories", async (ICategoriesService categoriesService) =>
 {
