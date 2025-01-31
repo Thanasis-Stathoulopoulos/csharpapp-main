@@ -1,29 +1,42 @@
+using CSharpApp.Application.Auth;
 using CSharpApp.Application.Categories;
-using Microsoft.Extensions.DependencyInjection;
+using CSharpApp.Infrastructure.Handlers;
 using Microsoft.Extensions.Options;
-using Polly;
 using Polly.Extensions.Http;
-using System;
-
-namespace CSharpApp.Infrastructure.Configuration;
+using Polly;
 
 public static class HttpConfiguration
 {
     public static IServiceCollection AddHttpConfiguration(this IServiceCollection services)
     {
+        // Register AuthService
+        services.AddHttpClient<IAuthService, AuthService>((provider, client) =>
+        {
+            var settings = provider.GetRequiredService<IOptions<RestApiSettings>>().Value;
+            client.BaseAddress = new Uri(settings.BaseUrl!);
+        });
+
+        // Register the DelegatingHandler
+        services.AddTransient<AuthDelegatingHandler>();
+
+        // Configure ProductsService with auth and retry policies
         services.AddHttpClient<IProductsService, ProductsService>((provider, client) =>
         {
             var settings = provider.GetRequiredService<IOptions<RestApiSettings>>().Value;
             client.BaseAddress = new Uri(settings.BaseUrl!);
         })
+        .AddHttpMessageHandler<AuthDelegatingHandler>()
         .AddPolicyHandler(GetRetryPolicy());
 
+        // Configure CategoriesService similarly
         services.AddHttpClient<ICategoriesService, CategoriesService>((provider, client) =>
         {
             var settings = provider.GetRequiredService<IOptions<RestApiSettings>>().Value;
             client.BaseAddress = new Uri(settings.BaseUrl!);
         })
+        .AddHttpMessageHandler<AuthDelegatingHandler>()
         .AddPolicyHandler(GetRetryPolicy());
+
         return services;
     }
 
