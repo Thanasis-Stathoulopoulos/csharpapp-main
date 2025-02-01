@@ -1,18 +1,13 @@
 ﻿using CSharpApp.Application.Products;
 using CSharpApp.Core.Dtos;
 using CSharpApp.Core.Settings;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Moq.Protected;
-using System.Collections.Generic;
-using System;
 using System.Net;
-using System.Net.Http;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
-using Microsoft.Extensions.Logging;
 
 namespace CSharpApp.Tests;
 
@@ -22,6 +17,18 @@ public class ProductsServiceTests
     public async Task GetProducts_ReturnsProducts()
     {
         // Arrange
+        var productList = new List<Product>
+        {
+            new Product
+            {
+                Id = 1,
+                Title = "Test Product",
+                Price = 100,
+                Description = "Test Description",
+                Images = new List<string> { "https://example.com/image.jpg" } // No duplicate images
+            }
+        };
+
         var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
         mockHttpMessageHandler
             .Protected()
@@ -33,10 +40,7 @@ public class ProductsServiceTests
             .ReturnsAsync(new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(JsonSerializer.Serialize(new List<Product>
-                {
-                new Product { Id = 1, Title = "Test Product", Price = 99 }
-                }))
+                Content = new StringContent(JsonSerializer.Serialize(productList))
             });
 
         var httpClient = new HttpClient(mockHttpMessageHandler.Object)
@@ -61,6 +65,9 @@ public class ProductsServiceTests
         Assert.NotNull(products);
         Assert.Single(products);
         Assert.Equal(1, products.First().Id);
-        Assert.Equal("Test Product", products.First().Title); // Use the correct property
+        Assert.Equal("Test Product", products.First().Title); // Use Title instead of Name
+        Assert.Equal(100, products.First().Price);
+        Assert.Single(products.First().Images);
+        Assert.Equal("https://example.com/image.jpg", products.First().Images.First());
     }
 }
