@@ -1,50 +1,35 @@
+using CSharpApp.Application.Products.CreateProduct;
 using CSharpApp.Core.Dtos;
+using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
-
 var logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
 builder.Logging.ClearProviders().AddSerilog(logger);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddDefaultConfiguration();
 builder.Services.AddHttpConfiguration();
 builder.Services.AddProblemDetails();
 builder.Services.AddApiVersioning();
+builder.Services.AddControllers();  
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateProductRequest).Assembly));  
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
+app.UseRouting();  // Add this
+app.UseEndpoints(endpoints =>  // Add this
+{
+    endpoints.MapControllers();
+});
+
 //app.UseHttpsRedirection();
 
 var versionedEndpointRouteBuilder = app.NewVersionedApi();
-
-var productsGroup = app.MapGroup("api/v{version:apiVersion}/products")
-    .WithTags("Products")
-    .WithOpenApi();
-
-productsGroup.MapGet("/", async (IProductsService productsService) =>
-    await productsService.GetProducts())
-    .WithName("GetProducts")
-    .Produces<IReadOnlyCollection<Product>>(StatusCodes.Status200OK);
-
-productsGroup.MapGet("/{id}", async (int id, IProductsService productsService) =>
-    await productsService.GetProductById(id))
-    .WithName("GetProductById")
-    .Produces<Product>(StatusCodes.Status200OK)
-    .Produces(StatusCodes.Status404NotFound);
-
-productsGroup.MapPost("/", async (Product product, IProductsService productsService) =>
-    Results.CreatedAtRoute("GetProductById", new { id = (await productsService.CreateProduct(product)).Id }, product))
-    .WithName("CreateProduct")
-    .Produces<Product>(StatusCodes.Status201Created)
-    .ProducesValidationProblem();
 
 var categoriesGroup = versionedEndpointRouteBuilder.MapGroup("api/v{version:apiVersion}/categories")
     .WithTags("Categories")
