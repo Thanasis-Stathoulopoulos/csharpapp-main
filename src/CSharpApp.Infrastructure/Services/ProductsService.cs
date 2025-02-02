@@ -1,5 +1,10 @@
+using CSharpApp.Core.Dtos;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Net.Http.Json;
-namespace CSharpApp.Application.Products;
+using System.Text.Json;
+
+namespace CSharpApp.Infrastructure.Services;
 public class ProductsService : IProductsService
 {
     private readonly HttpClient _httpClient;
@@ -32,9 +37,18 @@ public class ProductsService : IProductsService
         return JsonSerializer.Deserialize<Product>(content);
     }
 
-    public async Task<Product> CreateProduct(Product product)
+    public async Task<Product> CreateProduct(string title, int price, string description, List<string> images, int categoryId)
     {
-        var response = await _httpClient.PostAsJsonAsync(_restApiSettings.Products, product);
+        var createProductRequest = new
+        {
+            title = title,
+            price = price,
+            description = description,
+            images = images,
+            categoryId = categoryId
+        };
+
+        var response = await _httpClient.PostAsJsonAsync(_restApiSettings.Products, createProductRequest);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<Product>(content);

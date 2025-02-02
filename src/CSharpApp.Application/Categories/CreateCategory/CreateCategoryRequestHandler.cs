@@ -13,7 +13,10 @@ public class CreateCategoryRequestHandler : IRequestHandler<CreateCategoryReques
 
     public async Task<CreateCategoryResponse> Handle(CreateCategoryRequest request, CancellationToken cancellationToken)
     {
-        var category = await _categoriesService.CreateCategory(request.Category);
+        var category = await _categoriesService.CreateCategory(
+            request.Name,
+            request.Image);
+
         return new CreateCategoryResponse(category);
     }
 }

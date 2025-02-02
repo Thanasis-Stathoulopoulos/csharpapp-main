@@ -13,7 +13,13 @@ public class CreateProductRequestHandler : IRequestHandler<CreateProductRequest,
 
     public async Task<CreateProductResponse> Handle(CreateProductRequest request, CancellationToken cancellationToken)
     {
-        var product = await _productsService.CreateProduct(request.Product);
+        var product = await _productsService.CreateProduct(
+            request.Title,
+            request.Price,
+            request.Description,
+            request.Images,
+            request.CategoryId);
+
         return new CreateProductResponse(product);
     }
 }

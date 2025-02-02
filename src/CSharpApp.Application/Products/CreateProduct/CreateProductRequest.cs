@@ -2,4 +2,10 @@
 
 namespace CSharpApp.Application.Products.CreateProduct;
 
-public record CreateProductRequest(Product Product) : IRequest<CreateProductResponse>;
+public record CreateProductRequest(
+    string Title,
+    int Price,
+    string Description,
+    List<string> Images,
+    int CategoryId
+) : IRequest<CreateProductResponse>;

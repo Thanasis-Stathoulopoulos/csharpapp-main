@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using CSharpApp.Application.Categories.CreateCategory;
 using CSharpApp.Application.Products.CreateProduct;
 using CSharpApp.Application.Products.GetProductById;
 using CSharpApp.Application.Products.GetProducts;
@@ -40,9 +41,9 @@ public class ProductsController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(Product), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody] Product product)
+    public async Task<IActionResult> Create([FromBody] CreateCategoryRequest request)
     {
-        var response = await _mediator.Send(new CreateProductRequest(product));
-        return CreatedAtAction(nameof(GetById), new { id = response.Product.Id }, response.Product);
+        var response = await _mediator.Send(request);
+        return CreatedAtAction(nameof(GetById), new { id = response.Category.Id }, response.Category);
     }
 }

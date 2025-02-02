@@ -40,9 +40,10 @@ public class CategoriesController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(Category), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody] Category category)
+    public async Task<IActionResult> Create([FromBody] CreateCategoryRequest request)
     {
-        var response = await _mediator.Send(new CreateCategoryRequest(category));
+        var response = await _mediator.Send(request);
         return CreatedAtAction(nameof(GetById), new { id = response.Category.Id }, response.Category);
     }
+
 }

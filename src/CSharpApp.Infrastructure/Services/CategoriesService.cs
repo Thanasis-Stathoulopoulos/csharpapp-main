@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using System.Net.Http.Json;
 using System.Text.Json;
 
-namespace CSharpApp.Application.Categories;
+namespace CSharpApp.Infrastructure.Services;
 
 public class CategoriesService : ICategoriesService
 {
@@ -33,9 +33,15 @@ public class CategoriesService : ICategoriesService
         return JsonSerializer.Deserialize<Category>(content);
     }
 
-    public async Task<Category> CreateCategory(Category category)
+    public async Task<Category> CreateCategory(string name, string image)
     {
-        var response = await _httpClient.PostAsJsonAsync(_restApiSettings.Categories, category);
+        var createCategoryRequest = new
+        {
+            name = name,
+            image = image
+        };
+
+        var response = await _httpClient.PostAsJsonAsync(_restApiSettings.Categories, createCategoryRequest);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<Category>(content);
