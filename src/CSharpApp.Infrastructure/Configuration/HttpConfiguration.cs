@@ -4,6 +4,7 @@ using CSharpApp.Infrastructure.Handlers;
 using Microsoft.Extensions.Options;
 using Polly.Extensions.Http;
 using Polly;
+using CSharpApp.Infrastructure.Services;
 
 public static class HttpConfiguration
 {
