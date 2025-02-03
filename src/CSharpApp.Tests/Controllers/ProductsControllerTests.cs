@@ -1,22 +1,9 @@
-﻿using CSharpApp.Application.Products.GetProducts;
-using CSharpApp.Core.Dtos;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
-using CSharpApp.Api.Controllers;
+﻿using CSharpApp.Api.Controllers;
 using CSharpApp.Application.Products.GetProducts;
-using CSharpApp.Application.Products.GetProductById;
-using CSharpApp.Application.Products.CreateProduct;
 using CSharpApp.Core.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Xunit;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CSharpApp.Tests.Controllers
 {

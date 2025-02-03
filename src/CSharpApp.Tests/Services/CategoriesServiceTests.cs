@@ -2,12 +2,10 @@
 using CSharpApp.Core.Settings;
 using CSharpApp.Infrastructure.Services;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
 using System.Net;
 using System.Text.Json;
-using Xunit;
 
 namespace CSharpApp.Tests.Services;
 

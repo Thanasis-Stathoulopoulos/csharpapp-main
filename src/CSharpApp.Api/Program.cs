@@ -1,7 +1,5 @@
 using CSharpApp.Application.Products.CreateProduct;
-using CSharpApp.Core.Dtos;
 using CSharpApp.Infrastructure.Middleware;
-using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 var logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();

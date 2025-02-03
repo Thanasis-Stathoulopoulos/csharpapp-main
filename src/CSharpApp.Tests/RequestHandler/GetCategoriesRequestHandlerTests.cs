@@ -2,7 +2,6 @@
 using CSharpApp.Core.Dtos;
 using CSharpApp.Core.Interfaces;
 using Moq;
-using Xunit;
 
 namespace CSharpApp.Tests.RequestHandler;
 

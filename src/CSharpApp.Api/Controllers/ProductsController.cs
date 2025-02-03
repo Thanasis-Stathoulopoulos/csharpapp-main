@@ -1,5 +1,4 @@
 ﻿using Asp.Versioning;
-using CSharpApp.Application.Categories.CreateCategory;
 using CSharpApp.Application.Products.CreateProduct;
 using CSharpApp.Application.Products.GetProductById;
 using CSharpApp.Application.Products.GetProducts;

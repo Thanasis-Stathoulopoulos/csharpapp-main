@@ -1,10 +1,9 @@
 using CSharpApp.Application.Auth;
-using CSharpApp.Application.Categories;
 using CSharpApp.Infrastructure.Handlers;
-using Microsoft.Extensions.Options;
-using Polly.Extensions.Http;
-using Polly;
 using CSharpApp.Infrastructure.Services;
+using Microsoft.Extensions.Options;
+using Polly;
+using Polly.Extensions.Http;
 
 public static class HttpConfiguration
 {

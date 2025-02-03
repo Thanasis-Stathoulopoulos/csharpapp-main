@@ -1,5 +1,4 @@
-﻿using CSharpApp.Core.Interfaces;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 
 namespace CSharpApp.Infrastructure.Handlers;
 
