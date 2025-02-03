@@ -1,10 +1,10 @@
-﻿using CSharpApp.Application.Categories.CreateCategory;
-using CSharpApp.Application.Categories.GetCategoryById;
+﻿using Asp.Versioning;
+using CSharpApp.Application.Categories.CreateCategory;
 using CSharpApp.Application.Categories.GetCategories;
+using CSharpApp.Application.Categories.GetCategoryById;
 using CSharpApp.Core.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Asp.Versioning;
 
 namespace CSharpApp.Api.Controllers;
 

@@ -1,9 +1,7 @@
 ﻿using CSharpApp.Application.Products.GetProducts;
 using CSharpApp.Core.Dtos;
 using CSharpApp.Core.Interfaces;
-using MediatR;
 using Moq;
-using Xunit;
 
 namespace CSharpApp.Tests.RequestHandler;
 

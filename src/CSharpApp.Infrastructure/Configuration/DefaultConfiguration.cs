@@ -9,9 +9,6 @@ public static class DefaultConfiguration
 
         services.Configure<RestApiSettings>(configuration!.GetSection(nameof(RestApiSettings)));
         services.Configure<HttpClientSettings>(configuration.GetSection(nameof(HttpClientSettings)));
-
-        services.AddHttpConfiguration();
-
         return services;
     }
 }

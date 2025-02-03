@@ -6,7 +6,6 @@ using CSharpApp.Core.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Xunit;
 
 namespace CSharpApp.Tests.Controllers;
 

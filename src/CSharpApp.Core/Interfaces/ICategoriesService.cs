@@ -1,8 +1,4 @@
-﻿using CSharpApp.Core.Dtos;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace CSharpApp.Core.Interfaces;
+﻿namespace CSharpApp.Core.Interfaces;
 
 public interface ICategoriesService
 {

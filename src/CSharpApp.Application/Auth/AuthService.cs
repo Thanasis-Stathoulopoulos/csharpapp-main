@@ -1,7 +1,4 @@
-﻿using CSharpApp.Core.Dtos;
-using CSharpApp.Core.Settings;
-using Microsoft.Extensions.Options;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 
 namespace CSharpApp.Application.Auth;
 
