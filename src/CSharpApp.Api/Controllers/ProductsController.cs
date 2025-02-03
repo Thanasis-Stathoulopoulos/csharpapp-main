@@ -41,9 +41,9 @@ public class ProductsController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(Product), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody] CreateCategoryRequest request)
+    public async Task<IActionResult> Create([FromBody] CreateProductRequest request)
     {
         var response = await _mediator.Send(request);
-        return CreatedAtAction(nameof(GetById), new { id = response.Category.Id }, response.Category);
+        return CreatedAtAction(nameof(GetById), new { id = response.Product.Id }, response.Product);
     }
 }
