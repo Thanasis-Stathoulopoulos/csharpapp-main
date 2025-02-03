@@ -1,34 +1,36 @@
-var builder = WebApplication.CreateBuilder(args);
+using CSharpApp.Application.Products.CreateProduct;
+using CSharpApp.Core.Dtos;
+using CSharpApp.Infrastructure.Middleware;
+using MediatR;
 
+var builder = WebApplication.CreateBuilder(args);
 var logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
 builder.Logging.ClearProviders().AddSerilog(logger);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddDefaultConfiguration();
 builder.Services.AddHttpConfiguration();
 builder.Services.AddProblemDetails();
 builder.Services.AddApiVersioning();
+builder.Services.AddControllers();
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateProductRequest).Assembly));
+builder.Services.AddTransient<PerformanceLoggingMiddleware>();
+builder.Services.AddTransient<ErrorHandlingMiddleware>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
 //app.UseHttpsRedirection();
-
-var versionedEndpointRouteBuilder = app.NewVersionedApi();
-
-versionedEndpointRouteBuilder.MapGet("api/v{version:apiVersion}/getproducts", async (IProductsService productsService) =>
-    {
-        var products = await productsService.GetProducts();
-        return products;
-    })
-    .WithName("GetProducts")
-    .HasApiVersion(1.0);
+app.UseRouting();
+app.UseMiddleware<PerformanceLoggingMiddleware>();
+app.UseMiddleware<ErrorHandlingMiddleware>();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 
 app.Run();
