@@ -26,7 +26,8 @@ public class ProductsService : IProductsService
         var response = await _httpClient.GetAsync(_restApiSettings.Products);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<List<Product>>(content).AsReadOnly();
+        var products = JsonSerializer.Deserialize<List<Product>>(content);
+        return products?.AsReadOnly() ?? new List<Product>().AsReadOnly();
     }
 
     public async Task<Product> GetProductById(int id)
@@ -34,7 +35,8 @@ public class ProductsService : IProductsService
         var response = await _httpClient.GetAsync($"{_restApiSettings.Products}/{id}");
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<Product>(content);
+        var product = JsonSerializer.Deserialize<Product>(content);
+        return product ?? throw new InvalidOperationException($"product with id {id} not found");
     }
 
     public async Task<Product> CreateProduct(string title, int price, string description, List<string> images, int categoryId)
@@ -51,6 +53,7 @@ public class ProductsService : IProductsService
         var response = await _httpClient.PostAsJsonAsync(_restApiSettings.Products, createProductRequest);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<Product>(content);
+        var prodct = JsonSerializer.Deserialize<Product>(content);
+        return prodct ?? throw new InvalidOperationException("Product creation response was empty or invalid.");
     }
 }

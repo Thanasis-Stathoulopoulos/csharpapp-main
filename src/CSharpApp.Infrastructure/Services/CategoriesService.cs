@@ -22,7 +22,8 @@ public class CategoriesService : ICategoriesService
         var response = await _httpClient.GetAsync(_restApiSettings.Categories);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<List<Category>>(content).AsReadOnly();
+        var categories = JsonSerializer.Deserialize<List<Category>>(content);
+        return categories?.AsReadOnly() ?? new List<Category>().AsReadOnly();
     }
 
     public async Task<Category> GetCategoryById(int id)
@@ -30,7 +31,8 @@ public class CategoriesService : ICategoriesService
         var response = await _httpClient.GetAsync($"{_restApiSettings.Categories}/{id}");
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<Category>(content);
+        var category = JsonSerializer.Deserialize<Category>(content);
+        return category ?? throw new InvalidOperationException($"Category with id {id} not found");
     }
 
     public async Task<Category> CreateCategory(string name, string image)
@@ -44,6 +46,7 @@ public class CategoriesService : ICategoriesService
         var response = await _httpClient.PostAsJsonAsync(_restApiSettings.Categories, createCategoryRequest);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<Category>(content);
+        var category = JsonSerializer.Deserialize<Category>(content);
+        return category ?? throw new InvalidOperationException("Category creation response was empty or invalid.");
     }
 }
