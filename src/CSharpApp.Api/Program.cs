@@ -28,9 +28,6 @@ if (app.Environment.IsDevelopment())
 app.UseRouting();
 app.UseMiddleware<PerformanceLoggingMiddleware>();
 app.UseMiddleware<ErrorHandlingMiddleware>();
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
+app.MapControllers();
 
 app.Run();
